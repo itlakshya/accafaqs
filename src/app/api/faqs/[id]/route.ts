@@ -4,6 +4,8 @@ import { requireAuth } from '@/lib/auth'
 import { writeFile, mkdir, unlink } from 'fs/promises'
 import path from 'path'
 
+export const dynamic = 'force-dynamic'
+
 // PUT update FAQ (admin only)
 export async function PUT(
     request: NextRequest,
