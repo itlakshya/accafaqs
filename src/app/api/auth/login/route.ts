@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { signToken } from '@/lib/auth'
+import { cookies } from 'next/headers'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,8 +26,8 @@ export async function POST(request: NextRequest) {
 
         const token = signToken({ id: user.id, username: user.username })
 
-        const response = NextResponse.json({ success: true, message: 'Login successful' })
-        response.cookies.set('admin_token', token, {
+        const cookieStore = await cookies()
+        cookieStore.set('admin_token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
@@ -34,8 +35,9 @@ export async function POST(request: NextRequest) {
             path: '/',
         })
 
-        return response
+        return NextResponse.json({ success: true, message: 'Login successful' })
     } catch (error) {
+
         console.error('Login error:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
